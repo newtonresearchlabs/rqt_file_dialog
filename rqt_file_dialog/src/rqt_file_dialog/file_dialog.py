@@ -2,10 +2,13 @@ import os
 import rospkg
 import rospy
 
-from qt_gui.plugin import Plugin
 from python_qt_binding import QtCore
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QAction, QMenu, QWidget
+from python_qt_binding.QtWidgets import QFileDialog, QLineEdit, QPushButton
+from qt_gui.plugin import Plugin
+from std_msgs.msg import String
+
 
 class RqtFileDialog(Plugin):
 
@@ -45,15 +48,24 @@ class RqtFileDialog(Plugin):
             self._widget.setWindowTitle(self._widget.windowTitle() + (' (%d)' % context.serial_number()))
         # Add widget to the user interface
         context.add_widget(self._widget)
+        self.select_button = self._widget.findChild(QPushButton, 'select_button')
+        self.select_button.clicked.connect(self.handle_select)
+        self.current_line_edit = self._widget.findChild(QLineEdit, 'current_line_edit')
+        self.current_line_edit.editingFinished.connect(self.publish)
 
-        self._widget.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        action = QAction("do something", self._widget)
-        action.triggered.connect(self.do_something)
-        self._widget.addAction(action)
-        print 'test2'
+        self.pub = rospy.Publisher("file_dir", String, queue_size=1, latch=True)
 
-    def do_something(self):
-        print('did something')
+    def handle_select(self):
+        # TODO(lucasw) have a parameter define which kind of dialog to use
+        file_dir = self.current_line_edit.text()
+        new_file_dir, tmp = QFileDialog.getSaveFileName(caption="select a file",
+                                                        directory=os.path.dirname(file_dir))
+        if new_file_dir is not None:
+            self.current_line_edit.setText(new_file_dir)
+            self.publish()
+
+    def publish(self):
+        self.pub.publish(self.current_line_edit.text())
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
