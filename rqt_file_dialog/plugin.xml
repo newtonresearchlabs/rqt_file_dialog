@@ -1,0 +1,12 @@
+<library path="src">
+  <class name="File Dialog" type="rqt_file_dialog.file_dialog.RqtFileDialog" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      Select a file or directory and publish it on a latched topic
+    </description>
+    <qtgui>
+      <label>File Dialog</label>
+      <icon type="theme">system-help</icon>
+      <statustip>Select a file or directory.</statustip>
+    </qtgui>
+  </class>
+</library>
