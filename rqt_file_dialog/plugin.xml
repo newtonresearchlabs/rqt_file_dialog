@@ -4,6 +4,9 @@
       Select a file or directory and publish it on a latched topic
     </description>
     <qtgui>
+      <group>
+        <label>Miscellaneous Tools</label>
+      </group>
       <label>File Dialog</label>
       <icon type="theme">system-help</icon>
       <statustip>Select a file or directory.</statustip>

@@ -58,9 +58,17 @@ class RqtFileDialog(Plugin):
     def handle_select(self):
         # TODO(lucasw) have a parameter define which kind of dialog to use
         file_dir = self.current_line_edit.text()
-        new_file_dir, tmp = QFileDialog.getSaveFileName(caption="select a file",
-                                                        directory=os.path.dirname(file_dir))
-        if new_file_dir is not None:
+        new_file_dir = None
+        if self.mode == "file_save":
+            new_file_dir, tmp = QFileDialog.getSaveFileName(caption="Select a save file",
+                                                            directory=os.path.dirname(file_dir))
+        elif self.mode == "file_open":
+            new_file_dir, tmp = QFileDialog.getOpenFileName(caption="Select a file",
+                                                            directory=os.path.dirname(file_dir))
+        else:  # elif mode == "dir":
+            new_file_dir = QFileDialog.getExistingDirectory(caption="Select a directory",
+                                                            directory=os.path.dirname(file_dir))
+        if new_file_dir is not None and new_file_dir != "":
             self.current_line_edit.setText(new_file_dir)
             self.publish()
 
@@ -72,14 +80,21 @@ class RqtFileDialog(Plugin):
         pass
 
     def save_settings(self, plugin_settings, instance_settings):
-        # TODO save intrinsic configuration, usually using:
-        # instance_settings.set_value(k, v)
-        pass
+        instance_settings.set_value("file_dir", self.current_line_edit.text())
+        instance_settings.set_value("mode", self.mode)
+        instance_settings.set_value("select_text", self.select_button.text())
 
     def restore_settings(self, plugin_settings, instance_settings):
-        # TODO restore intrinsic configuration, usually using:
-        # v = instance_settings.value(k)
-        pass
+        if instance_settings.contains("file_dir"):
+            file_dir = instance_settings.value("file_dir")
+            self.current_line_edit.setText(file_dir)
+            self.publish()
+        self.mode = "file_save"
+        if instance_settings.contains("mode"):
+            self.mode = instance_settings.value("mode")
+
+        if instance_settings.contains("select_text"):
+            self.select_button.setText(instance_settings.value("select_text"))
 
     #def trigger_configuration(self):
         # Comment in to signal that the plugin has a way to configure
