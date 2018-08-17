@@ -53,7 +53,7 @@ class RqtFileDialog(Plugin):
         self.current_line_edit = self._widget.findChild(QLineEdit, 'current_line_edit')
         self.current_line_edit.editingFinished.connect(self.publish)
 
-        self.pub = rospy.Publisher("file_dir", String, queue_size=1, latch=True)
+        self.pub = None
 
     def handle_select(self):
         # TODO(lucasw) have a parameter define which kind of dialog to use
@@ -73,7 +73,8 @@ class RqtFileDialog(Plugin):
             self.publish()
 
     def publish(self):
-        self.pub.publish(self.current_line_edit.text())
+        if self.pub is not None:
+            self.pub.publish(self.current_line_edit.text())
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
@@ -83,6 +84,8 @@ class RqtFileDialog(Plugin):
         instance_settings.set_value("file_dir", self.current_line_edit.text())
         instance_settings.set_value("mode", self.mode)
         instance_settings.set_value("select_text", self.select_button.text())
+        if self.pub:
+            instance_settings.set_value("topic", self.topic)
 
     def restore_settings(self, plugin_settings, instance_settings):
         if instance_settings.contains("file_dir"):
@@ -92,6 +95,10 @@ class RqtFileDialog(Plugin):
         self.mode = "file_save"
         if instance_settings.contains("mode"):
             self.mode = instance_settings.value("mode")
+        self.topic = "file_dir"
+        if instance_settings.contains("topic"):
+            self.topic = instance_settings.value("topic")
+        self.pub = rospy.Publisher(self.topic, String, queue_size=1, latch=True)
 
         if instance_settings.contains("select_text"):
             self.select_button.setText(instance_settings.value("select_text"))
