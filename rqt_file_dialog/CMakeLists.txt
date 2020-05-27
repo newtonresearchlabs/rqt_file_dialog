@@ -1,17 +1,18 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(rqt_file_dialog)
+cmake_minimum_required(VERSION 3.0)
+project(rqt_file_dialog VERSION 0.0.1)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  roslint
   rospy
   rqt_gui_py
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-
+roslint_python()
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
