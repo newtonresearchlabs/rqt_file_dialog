@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ROS_CI_DESKTOP: "`lsb_release -cs`"  # e.g. [trusty|xenial|...]
       CI_SOURCE_PATH: $(pwd)
@@ -14,7 +14,7 @@ jobs:
       # Set the python path manually to include /usr/-/python2.7/dist-packages
       # as this is where apt-get installs python packages.
       PYTHONPATH: $PYTHONPATH:/usr/lib/python2.7/dist-packages:/usr/local/lib/python2.7/dist-packages
-      ROS_DISTRO: melodic
+      ROS_DISTRO: noetic
     steps:
       - uses: actions/checkout@v1
       - name: Install ROS
